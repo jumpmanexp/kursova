@@ -1,0 +1,32 @@
+parameters:
+    locale: fr
+    mail.name: '%env(MAILER_NAME)%'
+    mail.adress: '%env(MAILER_ADDRESS)%'
+    socialWeb.steam.apiKey: '%env(STEAM_WEB_API_KEY)%'
+    socialWeb.twitter.consumerKey: '%env(TWITTER_CONSUMER_KEY)%'
+    socialWeb.twitter.consumerSecret: '%env(TWITTER_CONSUMER_SECRET)%'
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    twig.extension.date:
+        class: Twig_Extensions_Extension_Date
+        tags:
+            - { name: twig.extension }
+
+    App\EventListener\EmailListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }

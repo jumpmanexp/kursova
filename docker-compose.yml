@@ -1,0 +1,38 @@
+version: '2.1'
+services:
+  bookstore-app:
+    build:
+      context: ./docker/
+    working_dir: /var/www/app
+    ports:
+      - 8080:80
+    volumes:
+      - ./app:/var/www/app:z
+    links:
+      - 'percona-db'
+    networks:
+      app_net:
+        ipv4_address: 172.188.0.5
+
+  percona-db:
+    image: percona
+    ports:
+      - 3308:3306
+    volumes:
+      - percona:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_DATABASE: 'bookstore'
+    networks:
+      app_net:
+        ipv4_address: 172.188.0.10
+volumes:
+  percona:
+
+networks:
+  app_net:
+    external:
+      name: bookstore-network

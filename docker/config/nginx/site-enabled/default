@@ -1,0 +1,32 @@
+server {
+        listen 0.0.0.0:80 default_server;
+
+        root /var/www/app/public;
+        charset utf-8;
+        index index.php;
+
+        sendfile on;
+        send_timeout 600s;
+
+        client_max_body_size 1024m;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ ^/index.php$ {
+                fastcgi_index  index.php;
+                fastcgi_keep_conn on;
+                fastcgi_pass   localhost:9000;
+                fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include        fastcgi_params;
+                fastcgi_param  HOME $document_root;
+                fastcgi_param  DOCUMENT_ROOT $document_root;
+                fastcgi_buffers 16 16k;
+                fastcgi_buffer_size 32k;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+} 
